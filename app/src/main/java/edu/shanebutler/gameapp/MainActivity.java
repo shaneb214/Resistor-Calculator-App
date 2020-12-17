@@ -3,6 +3,7 @@ package edu.shanebutler.gameapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnFour;
     Button[] buttons;
 
-    ArrayDeque<Integer> randomColours = new ArrayDeque<Integer>(4);
+    int[] buttonColours = new int[4];
     ArrayList<Integer> colourList = new ArrayList<Integer>();
 
     @Override
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             int randomIndex = new Random().nextInt(colourList.size());
             int randomColour = colourList.get(randomIndex);
 
-            randomColours.addLast(randomColour);
+            buttonColours[i] = randomColour;
             AssignColourToButton(buttons[i],randomColour);
 
             colourList.remove(randomIndex);
@@ -62,4 +63,12 @@ public class MainActivity extends AppCompatActivity {
     {
         ViewCompat.setBackgroundTintList(button, ColorStateList.valueOf(colour));
     }
+
+    public void OnPlayClicked(View view)
+    {
+        Intent sequenceIntent = new Intent(view.getContext(),SequenceActivity.class);
+        sequenceIntent.putExtra("ButtonColours",buttonColours);
+        startActivity(sequenceIntent);
+    }
+
 }
