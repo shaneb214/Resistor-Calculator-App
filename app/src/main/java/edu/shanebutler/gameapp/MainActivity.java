@@ -6,34 +6,46 @@ import androidx.core.view.ViewCompat;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnOne;
-    Button btnTwo;
-    Button btnThree;
-    Button btnFour;
-    Button[] buttons;
+    private Button btnNorth, btnSouth, btnEast, btnWest,btnShowSequence;
+    private Button[] buttons;
 
-    int[] buttonColours = new int[4];
-    ArrayList<Integer> colourList = new ArrayList<Integer>();
+
+    //Showing Sequence To User.
+    private boolean ShowingSequenceToUser;
+    private int sequenceIndex = 0;
+    private Handler sequenceHandler = new Handler();
+    private Button buttonInSequence;
+    private int millisecondsBetweenButtonFlashing = 1500;
+    private int millisecondsToFlash = 500;
+    private int millisecondsToGoToDefaultColour = 500;
+
+
+
+
+    private int[] buttonColours = new int[4];
+    private ArrayList<Integer> colourList = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnOne = findViewById(R.id.btnOne);
-        btnTwo = findViewById(R.id.btnTwo);
-        btnThree = findViewById(R.id.btnThree);
-        btnFour = findViewById(R.id.btnFour);
-        buttons = new Button[]{btnOne,btnTwo,btnThree,btnFour};
+        btnNorth = findViewById(R.id.btnNorth);
+        btnSouth = findViewById(R.id.btnSouth);
+        btnEast = findViewById(R.id.btnEast);
+        btnWest = findViewById(R.id.btnWest);
+        buttons = new Button[]{btnNorth,btnSouth,btnEast,btnWest};
+        GameInfo.startingSequenceAmount = buttons.length;
 
 
         AddColoursToColourList(); //Add all colours from colours. xml to a list.
@@ -49,7 +61,49 @@ public class MainActivity extends AppCompatActivity {
             colourList.remove(randomIndex);
         }
 
+        GameInfo.ResetSequence();
+
     }
+
+    private Runnable sequenceRunnable = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            buttonInSequence = buttons[GameInfo.sequence.get(sequenceIndex)];
+            Log.i("HELLO",buttonInSequence.getText().toString());
+
+            Runnable toWhiteRunnable = new Runnable() {
+                public void run()
+                {
+                    final int defaultColour = GetColourOfButton(buttonInSequence);
+                    ViewCompat.setBackgroundTintList(buttonInSequence, ColorStateList.valueOf(getResources().getColor(R.color.White)));
+
+                    Runnable toDefaultRunnable = new Runnable() {
+                        public void run()
+                        {
+                            ViewCompat.setBackgroundTintList(buttonInSequence, ColorStateList.valueOf(defaultColour));
+                        }
+                    };
+                    sequenceHandler.postDelayed(toDefaultRunnable, millisecondsToGoToDefaultColour);
+
+                } // end runnable
+            };
+            sequenceHandler.postDelayed(toWhiteRunnable, millisecondsToFlash);
+
+
+            if(sequenceIndex + 1 < GameInfo.sequence.size())
+            {
+                sequenceHandler.postDelayed(this,millisecondsBetweenButtonFlashing);
+                sequenceIndex++;
+            }
+            else
+            {
+                ShowingSequenceToUser = false; //Triggering too early.
+                sequenceIndex = 0;
+            }
+        }
+    };
 
     private void AddColoursToColourList()
     {
@@ -65,11 +119,24 @@ public class MainActivity extends AppCompatActivity {
         ViewCompat.setBackgroundTintList(button, ColorStateList.valueOf(colour));
     }
 
-    public void OnPlayClicked(View view)
+    public void OnTrySequenceClicked(View view)
     {
-        Intent sequenceIntent = new Intent(view.getContext(),SequenceActivity.class);
-        sequenceIntent.putExtra("ButtonColours",buttonColours);
-        //sequenceIntent.putExtra("ColourList",colourList);
-        startActivity(sequenceIntent);
+        if(!ShowingSequenceToUser)
+        {
+            Intent sequenceIntent = new Intent(view.getContext(),SequenceActivity.class);
+            sequenceIntent.putExtra("ButtonColours",buttonColours);
+            startActivity(sequenceIntent);
+        }
     }
+
+    public void OnShowSequenceClicked(View view)
+    {
+        if(!ShowingSequenceToUser)
+        {
+            ShowingSequenceToUser = true;
+            sequenceRunnable.run();
+        }
+    }
+
+    private int GetColourOfButton(Button button) { return button.getBackgroundTintList().getDefaultColor(); }
 }

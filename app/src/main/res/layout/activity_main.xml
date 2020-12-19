@@ -7,17 +7,17 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/btnPlay"
+        android:id="@+id/btnTrySequence"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="OnPlayClicked"
-        android:text="Play Game"
+        android:onClick="OnTrySequenceClicked"
+        android:text="Try Sequence"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.499"
+        app:layout_constraintHorizontal_bias="0.832"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.898" />
+        app:layout_constraintVertical_bias="0.878" />
 
     <TextView
         android:id="@+id/textView2"
@@ -32,11 +32,11 @@
         app:layout_constraintVertical_bias="0.093" />
 
     <Button
-        android:id="@+id/btnOne"
+        android:id="@+id/btnNorth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_button"
-        android:text="Button"
+        android:text="North"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.026"
@@ -45,11 +45,11 @@
         app:layout_constraintVertical_bias="0.498" />
 
     <Button
-        android:id="@+id/btnTwo"
+        android:id="@+id/btnSouth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_button"
-        android:text="Button"
+        android:text="South"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.319"
@@ -58,11 +58,11 @@
         app:layout_constraintVertical_bias="0.498" />
 
     <Button
-        android:id="@+id/btnThree"
+        android:id="@+id/btnEast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_button"
-        android:text="Button"
+        android:text="East"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.594"
@@ -71,16 +71,29 @@
         app:layout_constraintVertical_bias="0.498" />
 
     <Button
-        android:id="@+id/btnFour"
+        android:id="@+id/btnWest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_button"
-        android:text="Button"
+        android:text="West"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.872"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.498" />
+
+    <Button
+        android:id="@+id/btnShowSequence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="OnShowSequenceClicked"
+        android:text="Show Sequence"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.229"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.878" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
