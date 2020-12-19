@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
             colourList.remove(randomIndex);
         }
+
     }
 
     private void AddColoursToColourList()
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent sequenceIntent = new Intent(view.getContext(),SequenceActivity.class);
         sequenceIntent.putExtra("ButtonColours",buttonColours);
+        //sequenceIntent.putExtra("ColourList",colourList);
         startActivity(sequenceIntent);
     }
-
 }
