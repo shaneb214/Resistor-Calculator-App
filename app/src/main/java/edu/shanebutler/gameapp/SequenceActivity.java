@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -192,6 +193,9 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
                     {
                         Log.i("HELLO","Got it wrong - load game over");
                         PlayerGotSequenceWrong();
+
+                        Intent gameOverIntent = new Intent( this,GameOverActivity.class);
+                        startActivity(gameOverIntent);
                     }
 
 
@@ -239,7 +243,7 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
 
     //MAG + ACCEL
-    private boolean PhoneTiltedNorth(){return azimuth > 100 && pitch < 80f && roll < 100f;}
+    private boolean PhoneTiltedNorth(){return azimuth > 100 && pitch < 80f && pitch > 60f && roll < 100f;}
     private boolean PhoneTiltedSouth(){return azimuth < 70f && pitch < 70f;}
     private boolean PhoneTiltedEast(){return azimuth < 40f && pitch < 82f && roll < 35f ;}
     private boolean PhoneTiltedWest(){return azimuth > 115f && pitch < 80f && roll > 175f;}
@@ -247,9 +251,7 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
     private void PlayerGotSequenceWrong()
     {
-
         currentSequenceIndex = 0;
-        GameInfo.Reset();
     }
 
     //X = AZIMUTH

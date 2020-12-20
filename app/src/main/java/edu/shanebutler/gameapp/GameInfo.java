@@ -8,10 +8,12 @@ public class GameInfo
     public static ArrayList<Integer> sequence = new ArrayList<>();
 
     public static boolean PlayerLost = true;
-    public static int roundNumber;
+    public static int roundNumber = 1;
     public static int startingSequenceAmount;
     public static int currentSequenceAmount;
     private static int sequenceIncreaseAmount = 2;
+    public static int playerScore = 0;
+    private static int scoreIncreasePerRound = 2;
 
     public static void AddRandomNumbersToSequence(int amountToAdd)
     {
@@ -32,6 +34,8 @@ public class GameInfo
     public static void GoToNextRound()
     {
         roundNumber++;
+        playerScore += scoreIncreasePerRound;
+
         currentSequenceAmount += sequenceIncreaseAmount;
         AddRandomNumbersToSequence(sequenceIncreaseAmount);
     }
@@ -40,5 +44,6 @@ public class GameInfo
     {
         sequence.clear();
         roundNumber = 1;
+        playerScore = 0;
     }
 }
