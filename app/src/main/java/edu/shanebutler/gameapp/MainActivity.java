@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         btnEast = findViewById(R.id.btnEast);
         btnWest = findViewById(R.id.btnWest);
         buttons = new Button[]{btnNorth,btnSouth,btnEast,btnWest};
-        GameInfo.startingSequenceAmount = buttons.length;
+        GameInfo.currentSequenceAmount = buttons.length;
 
 
         AddColoursToColourList(); //Add all colours from colours. xml to a list.
@@ -61,7 +61,14 @@ public class MainActivity extends AppCompatActivity {
             colourList.remove(randomIndex);
         }
 
-        GameInfo.ResetSequence();
+        if(GameInfo.sequence.size() == 0) //Player is just starting from the beginning. FIX THIS UP - FEELS WRONG.
+        {
+             GameInfo.AddRandomNumbersToSequence(GameInfo.currentSequenceAmount);
+        }
+        else if(GameInfo.sequence.size() != buttons.length)
+        {
+            GameInfo.GoToNextRound();
+        }
 
     }
 
@@ -95,11 +102,13 @@ public class MainActivity extends AppCompatActivity {
             {
                 sequenceHandler.postDelayed(this,millisecondsBetweenButtonFlashing);
                 sequenceIndex++;
+                Log.i("INCREASE", String.valueOf(sequenceIndex));
             }
             else
             {
                 ShowingSequenceToUser = false; //Triggering too early.
                 sequenceIndex = 0;
+                Log.i("RESET", String.valueOf(sequenceIndex));
             }
         }
     };
@@ -133,7 +142,13 @@ public class MainActivity extends AppCompatActivity {
         if(!ShowingSequenceToUser)
         {
             ShowingSequenceToUser = true;
+            for(int i =0;i < GameInfo.sequence.size(); i++)
+            {
+                Log.i("HELLO",String.valueOf(GameInfo.sequence.get(i)));
+            }
+
             sequenceRunnable.run();
+
         }
     }
 

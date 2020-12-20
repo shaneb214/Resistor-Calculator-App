@@ -3,6 +3,7 @@ package edu.shanebutler.gameapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -30,23 +31,41 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
     int[] buttonColours;
 
-    //Sensor.
+    //Sensor fields for determining rotation of phone - using magnetic field and accelerometer sensors.
     private SensorManager sensorManager;
-    private Sensor sensor;
+    private Sensor aSensor;
+    private Sensor mSensor;
+
+    private float gravity[];
+    private float magnetic[];
+    private float accels[] = new float[3];
+    private float mags[] = new float[3];
+    private float[] values = new float[3];
+
+    private float azimuth;
+    private float pitch;
+    private float roll;
 
     //Selecting sequence.
-    private int currentSequenceIndex;
-    private boolean buttonIsSelected;
+    private int currentSequenceIndex = 0;
     private int indexOfSelectedButton;
+    private Button selectedButton;
+    private boolean buttonIsSelected;
     private int defaultColourOfButtonSelected;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sequence);
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        sensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
+        aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        sensorManager.registerListener(this, aSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
 
         tvX = findViewById(R.id.tvX);
         tvY = findViewById(R.id.tvY);
@@ -79,8 +98,8 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
     protected void onResume() {
         super.onResume();
         // turn on the sensor
-        sensorManager.registerListener(this, sensor,
-                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, aSensor,SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     /*
@@ -93,60 +112,103 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-
-        float x = Math.abs(event.values[0]);
-        float y = Math.abs(event.values[1]);
-        float z = Math.abs(event.values[2]);
-
-        tvX.setText(String.valueOf(x));
-        tvY.setText(String.valueOf(y));
-        tvZ.setText(String.valueOf(z));
-
-
-        if(PhoneTiltedNorth(x,y,z) && !buttonIsSelected)
-        {
-            OnButtonSelected(btnNorth);
-
-            tvOrientation.setText("North");
+    public void onSensorChanged(SensorEvent event)
+    {
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                mags = event.values.clone();
+                break;
+            case Sensor.TYPE_ACCELEROMETER:
+                accels = event.values.clone();
+                break;
         }
-        else if(PhoneTiltedSouth(x,y,z) && !buttonIsSelected)
-        {
-            OnButtonSelected(btnSouth);
 
-            tvOrientation.setText("South");
-        }
-        else if(PhoneTiltedEast(y,x) && !buttonIsSelected)
-        {
-            OnButtonSelected(btnEast);
+        if (mags != null && accels != null) {
+            gravity = new float[9];
+            magnetic = new float[9];
+            SensorManager.getRotationMatrix(gravity, magnetic, accels, mags);
+            float[] outGravity = new float[9];
+            SensorManager.remapCoordinateSystem(gravity, SensorManager.AXIS_X,SensorManager.AXIS_Z, outGravity);
+            SensorManager.getOrientation(outGravity, values);
 
-            tvOrientation.setText("East");
-        }
-        else if(PhoneTiltedWest(x,y) && !buttonIsSelected)
-        {
-            OnButtonSelected(btnWest);
+            azimuth = Math.abs(values[0] * 57.2957795f);
+            pitch = Math.abs(values[1] * 57.2957795f);
+            roll = Math.abs(values[2] * 57.2957795f);
+            mags = null;
+            accels = null;
 
-            tvOrientation.setText("West");
-        }
-        else
-        {
-            tvOrientation.setText("NONE");
+            tvX.setText(String.valueOf((int) azimuth));
+            tvY.setText(String.valueOf((int) pitch));
+            tvZ.setText(String.valueOf((int)roll));
 
-            if(buttonIsSelected)
+
+            if(PhoneTiltedNorth() && !buttonIsSelected)
             {
-                buttonIsSelected = false;
-                ViewCompat.setBackgroundTintList(buttons.get(indexOfSelectedButton), ColorStateList.valueOf(defaultColourOfButtonSelected));
+                OnButtonSelected(btnNorth);
 
-                //CHECK IF INDEX OF SELECTED BUTTON MATCHES SEQUENCE INDEX.
-                //IF YES - INCREASE SEQUENCE COUNTER.
-                // CHECK IF AT END OF SEQUENCE ARRAY.
-                // IF YES - LOAD MAIN ACTIVITY, GO TO NEXT ROUND.
+                tvOrientation.setText("North");
+            }
+            else if(PhoneTiltedSouth() && !buttonIsSelected)
+            {
+                OnButtonSelected(btnSouth);
 
-                //IF NO - RESET ROUND TO 1. RESET SEQUENCE ARRAY. GO BACK TO MAIN ACTIVITY.
+                tvOrientation.setText("South");
+            }
+            else if(PhoneTiltedEast() && !buttonIsSelected)
+            {
+                OnButtonSelected(btnEast);
 
+                tvOrientation.setText("East");
+            }
+            else if(PhoneTiltedWest() && !buttonIsSelected)
+            {
+                OnButtonSelected(btnWest);
+
+                tvOrientation.setText("West");
+            }
+            else if(PhoneIsFlat())
+            {
+                tvOrientation.setText("NONE");
+
+                if(buttonIsSelected)
+                {
+                    buttonIsSelected = false;
+                    ViewCompat.setBackgroundTintList(buttons.get(indexOfSelectedButton), ColorStateList.valueOf(defaultColourOfButtonSelected));
+
+
+                    if(indexOfSelectedButton == GameInfo.sequence.get(currentSequenceIndex))
+                    {
+                        Log.i("HELLO","Got it right.");
+                        currentSequenceIndex++;
+
+                        if(currentSequenceIndex == GameInfo.sequence.size())
+                        {
+                            Log.i("HELLO","Reached end of sequence.");
+
+
+                        }
+                    }
+                    else
+                    {
+                        Log.i("HELLO","Got it wrong - load game over");
+                        PlayerGotSequenceWrong();
+                    }
+
+
+
+
+                    //CHECK IF INDEX OF SELECTED BUTTON MATCHES SEQUENCE INDEX.
+                    //IF YES - INCREASE SEQUENCE COUNTER.
+                    // CHECK IF AT END OF SEQUENCE ARRAY.
+                    // IF YES - LOAD MAIN ACTIVITY, GO TO NEXT ROUND.
+
+                    //IF NO - RESET ROUND TO 1. RESET SEQUENCE ARRAY. GO BACK TO MAIN ACTIVITY.
+
+                }
             }
         }
     }
+
 
     private void OnButtonSelected(Button buttonToSelect)
     {
@@ -154,7 +216,7 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
         //Find Button to select.
         indexOfSelectedButton = buttons.indexOf(buttonToSelect);
-        Button selectedButton = buttons.get(indexOfSelectedButton);
+        selectedButton = buttons.get(indexOfSelectedButton);
 
         //Colours.
         defaultColourOfButtonSelected = GetColourOfButton(selectedButton);
@@ -169,9 +231,35 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
     private int GetColourOfButton(Button button) { return button.getBackgroundTintList().getDefaultColor(); }
 
 
-    private boolean PhoneTiltedNorth(float X, float Y,float Z){return X > 3f && Y < 0.6f && Z < 10f;}     //North - X greater than 3.5 AND Y less than 0.3     X > 4 && Y < 0.4
-    private boolean PhoneTiltedSouth(float X,float Y, float Z){return X > 3f && Y < 0.2f && Z < 7.5;}            //South - X greater than 6 AND Z less than 7 Y < 0.3
-    private boolean PhoneTiltedEast(float Y, float X){return Y > 3 && X < 1;}            //East - Y greater than 3 AND X less than 1.
-    private boolean PhoneTiltedWest(float X, float Y){return X > 1 && Y > 3;}            //West - X greater than 1 AND Y greater than 3
+    //private boolean PhoneTiltedNorth(float X, float Y,float Z){return X > 2.2f && Y > 0.07f && Z > 8f;}     //North - X greater than 3.5 AND Y less than 0.3     X > 4 && Y < 0.4
+    //private boolean PhoneTiltedSouth(float X,float Y, float Z){return X > 2.7f && Y < 0.07f && Z < 10;}     //South - X greater than 6 AND Z less than 7 Y < 0.3
+    //private boolean PhoneTiltedEast(float Y, float X){return Y > 3 && X < 1;}                             //East - Y greater than 3 AND X less than 1.
+    //private boolean PhoneTiltedWest(float X, float Y){return X > 1 && Y > 3;}                             //West - X greater than 1 AND Y greater than 3
+
+
+
+    //MAG + ACCEL
+    private boolean PhoneTiltedNorth(){return azimuth > 100 && pitch < 80f && roll < 100f;}
+    private boolean PhoneTiltedSouth(){return azimuth < 70f && pitch < 70f;}
+    private boolean PhoneTiltedEast(){return azimuth < 40f && pitch < 82f && roll < 35f ;}
+    private boolean PhoneTiltedWest(){return azimuth > 115f && pitch < 80f && roll > 175f;}
+    private boolean PhoneIsFlat(){return azimuth > 120 && pitch > 80;}
+
+    private void PlayerGotSequenceWrong()
+    {
+
+        currentSequenceIndex = 0;
+        GameInfo.Reset();
+    }
+
+    //X = AZIMUTH
+    //Y = PITCH
+    //Z = ROLL
+
+
+    //NORTH - pitch < 72 && Z > 85
+    //SOUTH - pitch < 70 && Z < -85
+    //EAST - AZIMUTH < -15
+    //WEST - AZIMUTH > 115
 
 }
