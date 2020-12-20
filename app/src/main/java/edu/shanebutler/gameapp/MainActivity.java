@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         public void run()
         {
             buttonInSequence = buttons[GameInfo.sequence.get(sequenceIndex)];
-            Log.i("HELLO",buttonInSequence.getText().toString());
 
             Runnable toWhiteRunnable = new Runnable() {
                 public void run()
