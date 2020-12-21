@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper
@@ -18,54 +19,52 @@ public class DatabaseHandler extends SQLiteOpenHelper
     private static final String KEY_NAME = "name";
     private static final String KEY_SCORE = "score";
 
-    public DatabaseHandler(Context context) {
+    public DatabaseHandler(Context context)
+    {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        //3rd argument to be passed is CursorFactory instance
     }
 
-    // Creating Tables
+
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db)
+    {
         String CREATE_GAMESCORES_TABLE = "CREATE TABLE " + TABLE_GAMESCORES + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
                 + KEY_SCORE + " TEXT" + ")";
         db.execSQL(CREATE_GAMESCORES_TABLE);
     }
 
-    // Upgrading database
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GAMESCORES);
 
-        // Create tables again
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GAMESCORES);
         onCreate(db);
     }
 
-    public void emptyGamescores() {
-        // Drop older table if existed
+    public void emptyGamescores()
+    {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GAMESCORES);
 
-        // Create tables again
         onCreate(db);
     }
-    // code to add the new contact
-    void addGamescore(GameScore gameScore) {
+
+    void addGamescore(GameScore gameScore)
+    {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, gameScore.getName()); // Name
         values.put(KEY_SCORE, gameScore.getScore()); // Score
 
-        // Inserting Row
         db.insert(TABLE_GAMESCORES, null, values);
-        //2nd argument is String containing nullColumnHack
-        db.close(); // Closing database connection
+        db.close();
     }
 
-    // code to get the single contact
-    GameScore getGamescore(int id) {
+
+    GameScore getGamescore(int id)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_GAMESCORES, new String[] { KEY_ID,
@@ -76,58 +75,56 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
         GameScore gameScore = new GameScore(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), Integer.parseInt(cursor.getString(2)));
-        // return contact
+
         return gameScore;
     }
 
-    // code to get all contacts in a list view
-    public List<GameScore> getAllGameScores() {
+    public List<GameScore> getAllGameScores()
+    {
         List<GameScore> gamescoreList = new ArrayList<GameScore>();
-        // Select All Query
+
         String selectQuery = "SELECT  * FROM " + TABLE_GAMESCORES;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
                 GameScore gameScore = new GameScore();
                 gameScore.setID(Integer.parseInt(cursor.getString(0)));
                 gameScore.setName(cursor.getString(1));
                 gameScore.setScore(Integer.parseInt(cursor.getString(2)));
-                // Adding contact to list
+
                 gamescoreList.add(gameScore);
             } while (cursor.moveToNext());
         }
 
-        // return contact list
         return gamescoreList;
     }
 
 
     // code to update the single contact
-    public int updateGamescore(GameScore gameScore) {
+    public int updateGamescore(GameScore gameScore)
+    {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, gameScore.getName());
         values.put(KEY_SCORE, gameScore.getScore());
 
-        // updating row
         return db.update(TABLE_GAMESCORES, values, KEY_ID + " = ?",
                 new String[] { String.valueOf(gameScore.getID()) });
     }
 
-    // Deleting single contact
-    public void deleteGamescore(GameScore gameScore) {
+
+    public void deleteGamescore(GameScore gameScore)
+    {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_GAMESCORES, KEY_ID + " = ?",
                 new String[] { String.valueOf(gameScore.getID()) });
         db.close();
     }
 
-    // Getting contacts Count
     public int getGamescoresCount() {
         int count = 0;
         String countQuery = "SELECT  * FROM " + TABLE_GAMESCORES;
@@ -136,7 +133,39 @@ public class DatabaseHandler extends SQLiteOpenHelper
         count = cursor.getCount();
         cursor.close();
 
-        // return count
         return count;
+    }
+
+    //Lets say if if top 5 scores are all scores of 2.
+    //If user gets 2 and this method is called, it will return true as 2 >= 2.
+    //However when calling getTopScores - not sure if this score will be in that top 5.
+    public boolean isScoreInTop5(int score)
+    {
+        List<GameScore> top5List = getTop5Scores();
+
+        for(int i = 0; i < top5List.size(); i++)
+        {
+            if(score >= top5List.get(i).getScore())
+                return true;
+        }
+
+        return false;
+    }
+
+    public List<GameScore> getTop5Scores()
+    {
+        List<GameScore> top5ScoreList;
+
+        List<GameScore> allGameScores = getAllGameScores();
+
+        Collections.sort(allGameScores);
+
+        if(allGameScores.size() >= 5)
+            top5ScoreList = allGameScores.subList(0,5);
+        else
+            top5ScoreList = allGameScores;
+
+
+        return top5ScoreList;
     }
 }

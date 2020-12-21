@@ -1,14 +1,15 @@
 package edu.shanebutler.gameapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.List;
 
 public class HighScores extends AppCompatActivity
 {
@@ -20,13 +21,13 @@ public class HighScores extends AppCompatActivity
     TextView tvHighScore4;
     TextView tvHighScore5;
     TextView[] tvHighScoreTable;
+    private int padLeftTotalAmount = 30;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_high_scores);
-
 
         //Finding UI Elements.
         btnPlayAgain = findViewById(R.id.btnPlayAgain);
@@ -37,6 +38,19 @@ public class HighScores extends AppCompatActivity
         tvHighScore5 = findViewById(R.id.tvHighScore5);
         tvHighScoreTable = new TextView[]{tvHighScore1,tvHighScore2,tvHighScore3,tvHighScore4,tvHighScore5};
 
+
+        //Populate text views with top 5 high scores.
+        DatabaseHandler db = new DatabaseHandler(this);
+        List<GameScore> top5Scores;
+        top5Scores = db.getTop5Scores();
+
+        for(int i = 0; i < top5Scores.size(); i++)
+        {
+            GameScore score = top5Scores.get(i);
+            String startingText = (i + 1) + ". " + score.getName();
+            Log.i("TEST",startingText + GenerateWhiteSpace(padLeftTotalAmount - startingText.length()) + score.getScore());
+            tvHighScoreTable[i].setText(startingText + GenerateWhiteSpace(padLeftTotalAmount - startingText.length()) + score.getScore());
+        }
     }
 
     public void OnPlayAgainClicked(View view)
@@ -44,5 +58,14 @@ public class HighScores extends AppCompatActivity
         GameInfo.Reset();
         Intent mainIntent = new Intent(view.getContext(),MainActivity.class);
         startActivity(mainIntent);
+    }
+
+    public String GenerateWhiteSpace(int length)
+    {
+        StringBuilder sb = new StringBuilder();
+        while(sb.length() < length)
+            sb.append(' ');
+
+        return sb.toString();
     }
 }

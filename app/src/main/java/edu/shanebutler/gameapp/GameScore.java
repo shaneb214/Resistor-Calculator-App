@@ -1,6 +1,6 @@
 package edu.shanebutler.gameapp;
 
-public class GameScore
+public class GameScore implements Comparable<GameScore>
 {
     private int _id;
     private String _name;
@@ -29,4 +29,14 @@ public class GameScore
     public int getScore(){return this._score;}
     public void setScore(int score){this._score = score;}
 
+
+    @Override
+    public int compareTo(GameScore other) {
+
+        if(getScore() < other.getScore())
+            return 1;
+        else if(getScore() == other.getScore())
+            return 0;
+        else return -1;
+    }
 }
