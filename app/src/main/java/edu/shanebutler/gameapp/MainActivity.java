@@ -53,27 +53,33 @@ public class MainActivity extends AppCompatActivity {
 
         AddColoursToColourList(); //Add all colours from colours. xml to a list.
 
-        for(int i = 0; i < buttons.length; i++) //Assign random colour to each button. List ensures that same colour isn't chosen more than once.
+
+        if(GameInfo.roundNumber == 1)
         {
-            int randomIndex = new Random().nextInt(colourList.size());
-            int randomColour = colourList.get(randomIndex);
+            for(int i = 0; i < buttons.length; i++) //Assign random colour to each button. List ensures that same colour isn't chosen more than once.
+            {
+                int randomIndex = new Random().nextInt(colourList.size());
+                int randomColour = colourList.get(randomIndex);
 
-            buttonColours[i] = randomColour;
-            AssignColourToButton(buttons[i],randomColour);
+                buttonColours[i] = randomColour;
+                AssignColourToButton(buttons[i],randomColour);
 
-            colourList.remove(randomIndex);
+                colourList.remove(randomIndex);
+            }
+        }
+        else
+        {
+            buttonColours = getIntent().getIntArrayExtra("ButtonColours");
+            for(int i = 0; i < buttons.length; i++)
+            {
+                AssignColourToButton(buttons[i],buttonColours[i]);
+            }
         }
 
         if(GameInfo.sequence.size() == 0) //Player is just starting from the beginning. FIX THIS UP - FEELS WRONG.
         {
              GameInfo.AddRandomNumbersToSequence(GameInfo.currentSequenceAmount);
         }
-
-        //else if(GameInfo.sequence.size() != buttons.length)
-        //{
-       //     GameInfo.GoToNextRound();
-       // }
-
     }
 
     private Runnable sequenceRunnable = new Runnable()

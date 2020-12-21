@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#4CABF4"
     tools:context=".GameOverActivity">
 
     <TextView
@@ -21,21 +22,21 @@
 
     <TextView
         android:id="@+id/tvGameOver"
-        android:layout_width="317dp"
-        android:layout_height="57dp"
+        android:layout_width="433dp"
+        android:layout_height="42dp"
         android:text="You got it wrong!"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.13"
+        app:layout_constraintHorizontal_bias="0.181"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.096" />
+        app:layout_constraintVertical_bias="0.119" />
 
     <TextView
         android:id="@+id/tvTopScoreNotification"
-        android:layout_width="438dp"
-        android:layout_height="43dp"
+        android:layout_width="433dp"
+        android:layout_height="42dp"
         android:text="Your score was in the top 5!"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -47,16 +48,16 @@
 
     <TextView
         android:id="@+id/tvScore"
-        android:layout_width="351dp"
-        android:layout_height="47dp"
+        android:layout_width="433dp"
+        android:layout_height="42dp"
         android:text="Your score was "
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.181"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.439" />
+        app:layout_constraintVertical_bias="0.444" />
 
     <Button
         android:id="@+id/btnPlayAgain"
@@ -88,8 +89,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="Enter Name"
+        android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.36"

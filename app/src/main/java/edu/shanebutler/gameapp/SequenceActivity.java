@@ -187,6 +187,7 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
                             GameInfo.GoToNextRound();
                             Log.i("HELLO","Reached end of sequence.");
                             Intent mainIntent = new Intent( this,MainActivity.class);
+                            mainIntent.putExtra("ButtonColours",buttonColours);
                             startActivity(mainIntent);
                         }
                     }
