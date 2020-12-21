@@ -14,6 +14,7 @@ public class GameInfo
     private static int sequenceIncreaseAmount = 2;
     public static int playerScore = 0;
     private static int scoreIncreasePerRound = 2;
+    public static int totalNumberOfButtons;
 
     public static void AddRandomNumbersToSequence(int amountToAdd)
     {
@@ -21,14 +22,8 @@ public class GameInfo
 
         for(int i = 0; i < amountToAdd; i++)
         {
-            sequence.add(rng.nextInt(currentSequenceAmount));
+            sequence.add(rng.nextInt(totalNumberOfButtons));
         }
-    }
-
-    public static void ResetSequence()
-    {
-        sequence.clear();
-        AddRandomNumbersToSequence(startingSequenceAmount);
     }
 
     public static void GoToNextRound()

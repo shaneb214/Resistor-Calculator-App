@@ -10,12 +10,14 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    private TextView tvRoundInfo;
     private Button btnNorth, btnSouth, btnEast, btnWest,btnShowSequence;
     private Button[] buttons;
 
@@ -29,9 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private int millisecondsToFlash = 500;
     private int millisecondsToGoToDefaultColour = 500;
 
-
-
-
     private int[] buttonColours = new int[4];
     private ArrayList<Integer> colourList = new ArrayList<Integer>();
 
@@ -40,13 +39,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tvRoundInfo = findViewById(R.id.tvRoundInfo);
+
         btnNorth = findViewById(R.id.btnNorth);
         btnSouth = findViewById(R.id.btnSouth);
         btnEast = findViewById(R.id.btnEast);
         btnWest = findViewById(R.id.btnWest);
         buttons = new Button[]{btnNorth,btnSouth,btnEast,btnWest};
+        GameInfo.totalNumberOfButtons = buttons.length;
         GameInfo.currentSequenceAmount = buttons.length;
 
+        tvRoundInfo.setText("Round " + GameInfo.roundNumber);
 
         AddColoursToColourList(); //Add all colours from colours. xml to a list.
 
@@ -65,10 +68,11 @@ public class MainActivity extends AppCompatActivity {
         {
              GameInfo.AddRandomNumbersToSequence(GameInfo.currentSequenceAmount);
         }
-        else if(GameInfo.sequence.size() != buttons.length)
-        {
-            GameInfo.GoToNextRound();
-        }
+
+        //else if(GameInfo.sequence.size() != buttons.length)
+        //{
+       //     GameInfo.GoToNextRound();
+       // }
 
     }
 

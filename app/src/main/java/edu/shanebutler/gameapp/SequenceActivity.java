@@ -184,9 +184,10 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
                         if(currentSequenceIndex == GameInfo.sequence.size())
                         {
+                            GameInfo.GoToNextRound();
                             Log.i("HELLO","Reached end of sequence.");
-
-
+                            Intent mainIntent = new Intent( this,MainActivity.class);
+                            startActivity(mainIntent);
                         }
                     }
                     else
@@ -245,8 +246,8 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
     //MAG + ACCEL
     private boolean PhoneTiltedNorth(){return azimuth > 100 && pitch < 80f && pitch > 60f && roll < 100f;}
     private boolean PhoneTiltedSouth(){return azimuth < 70f && pitch < 70f;}
-    private boolean PhoneTiltedEast(){return azimuth < 40f && pitch < 82f && roll < 35f ;}
-    private boolean PhoneTiltedWest(){return azimuth > 115f && pitch < 80f && roll > 175f;}
+    private boolean PhoneTiltedEast(){return azimuth < 70f && pitch < 82f && roll < 35f ;}
+    private boolean PhoneTiltedWest(){return azimuth < 110f && pitch < 85f && roll > 170f;}
     private boolean PhoneIsFlat(){return azimuth > 120 && pitch > 80;}
 
     private void PlayerGotSequenceWrong()
