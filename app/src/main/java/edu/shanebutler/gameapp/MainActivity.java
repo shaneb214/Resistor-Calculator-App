@@ -17,6 +17,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    //UI Elements.
     private TextView tvRoundInfo;
     private Button btnNorth, btnSouth, btnEast, btnWest,btnShowSequence;
     private Button[] buttons;
@@ -39,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Find UI Elements.
         tvRoundInfo = findViewById(R.id.tvRoundInfo);
-
         btnNorth = findViewById(R.id.btnNorth);
         btnSouth = findViewById(R.id.btnSouth);
         btnEast = findViewById(R.id.btnEast);
@@ -53,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
         AddColoursToColourList(); //Add all colours from colours. xml to a list.
 
-
+        //If at start of game, assign random colour to each button.
         if(GameInfo.roundNumber == 1)
         {
-            for(int i = 0; i < buttons.length; i++) //Assign random colour to each button. List ensures that same colour isn't chosen more than once.
+            for(int i = 0; i < buttons.length; i++)
             {
                 int randomIndex = new Random().nextInt(colourList.size());
                 int randomColour = colourList.get(randomIndex);
@@ -64,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
                 buttonColours[i] = randomColour;
                 AssignColourToButton(buttons[i],randomColour);
 
-                colourList.remove(randomIndex);
+                colourList.remove(randomIndex); //List ensures that same colour isn't chosen more than once.
             }
         }
-        else
+        else //Not at start of game - so round 2,3 etc. Don't get random colours -  Get colours from sequence activity.
         {
             buttonColours = getIntent().getIntArrayExtra("ButtonColours");
             for(int i = 0; i < buttons.length; i++)
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if(GameInfo.sequence.size() == 0) //Player is just starting from the beginning. FIX THIS UP - FEELS WRONG.
+        if(GameInfo.IsAtStartOfGame()) //Player is just starting, add 4 to sequence.
         {
              GameInfo.AddRandomNumbersToSequence(GameInfo.currentSequenceAmount);
         }
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void OnTrySequenceClicked(View view)
     {
+        //Load activity to attempt sequence - pass over colours of buttons.
         if(!ShowingSequenceToUser)
         {
             Intent sequenceIntent = new Intent(view.getContext(),SequenceActivity.class);
@@ -149,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void OnShowSequenceClicked(View view)
     {
+        //Show sequence to user.
         if(!ShowingSequenceToUser)
         {
             ShowingSequenceToUser = true;

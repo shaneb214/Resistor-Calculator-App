@@ -25,7 +25,7 @@ import java.util.Random;
 
 public class SequenceActivity extends AppCompatActivity implements SensorEventListener
 {
-    //Activity Elements.
+    //UI Elements.
     private TextView tvX, tvY, tvZ, tvOrientation;
     private Button btnNorth, btnSouth,btnEast,btnWest;
     private ArrayList<Button> buttons;
@@ -42,16 +42,15 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
     private float accels[] = new float[3];
     private float mags[] = new float[3];
     private float[] values = new float[3];
-
     private float azimuth;
     private float pitch;
     private float roll;
 
     //Selecting sequence.
-    private int currentSequenceIndex = 0;
-    private int indexOfSelectedButton;
     private Button selectedButton;
     private boolean buttonIsSelected;
+    private int currentSequenceIndex = 0;
+    private int indexOfSelectedButton;
     private int defaultColourOfButtonSelected;
 
 
@@ -61,6 +60,7 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         setContentView(R.layout.activity_sequence);
 
 
+        //Setting up Sensor.
         sensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
         aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -68,12 +68,14 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         sensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
 
+        //UI for debugging tilting values.
         tvX = findViewById(R.id.tvX);
         tvY = findViewById(R.id.tvY);
         tvZ = findViewById(R.id.tvZ);
         tvOrientation = findViewById(R.id.tvOrientation);
 
 
+        //Finding UI Elements.
         btnNorth = findViewById(R.id.btnNorth);
         btnSouth = findViewById(R.id.btnSouth);
         btnEast = findViewById(R.id.btnEast);
@@ -86,9 +88,8 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         GameInfo.startingSequenceAmount = buttons.size();
 
 
+        //Finding and assigning colours to each button from the previous activity.
         buttonColours = getIntent().getIntArrayExtra("ButtonColours");
-
-
         for(int i = 0; i < buttons.size();i++)
         {
             ViewCompat.setBackgroundTintList(buttons.get(i), ColorStateList.valueOf(buttonColours[i]));
@@ -98,17 +99,18 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
     protected void onResume() {
         super.onResume();
-        // turn on the sensor
+
         sensorManager.registerListener(this, aSensor,SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    /*
-     * App running but not on screen - in the background
-     */
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);    // turn off listener to save power
+        sensorManager.unregisterListener(this);
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
 
@@ -132,17 +134,20 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
             SensorManager.remapCoordinateSystem(gravity, SensorManager.AXIS_X,SensorManager.AXIS_Z, outGravity);
             SensorManager.getOrientation(outGravity, values);
 
+            //Get rotation of phone.
             azimuth = Math.abs(values[0] * 57.2957795f);
             pitch = Math.abs(values[1] * 57.2957795f);
             roll = Math.abs(values[2] * 57.2957795f);
             mags = null;
             accels = null;
 
+
             tvX.setText(String.valueOf((int) azimuth));
             tvY.setText(String.valueOf((int) pitch));
             tvZ.setText(String.valueOf((int)roll));
 
 
+            //Check if phone is tilted a certain way - if it is, select button.
             if(PhoneTiltedNorth() && !buttonIsSelected)
             {
                 OnButtonSelected(btnNorth);
@@ -171,17 +176,21 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
             {
                 tvOrientation.setText("NONE");
 
+                //If phone goes back to being flat after a button was selected.
                 if(buttonIsSelected)
                 {
+                    //Reset button.
                     buttonIsSelected = false;
                     ViewCompat.setBackgroundTintList(buttons.get(indexOfSelectedButton), ColorStateList.valueOf(defaultColourOfButtonSelected));
 
-
+                    //If button selected was correct in the sequence.
                     if(indexOfSelectedButton == GameInfo.sequence.get(currentSequenceIndex))
                     {
                         Log.i("HELLO","Got it right.");
                         currentSequenceIndex++;
 
+
+                        //If player finished the sequence correctly. Go to next round and load main activity.
                         if(currentSequenceIndex == GameInfo.sequence.size())
                         {
                             GameInfo.GoToNextRound();
@@ -191,25 +200,14 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
                             startActivity(mainIntent);
                         }
                     }
-                    else
+                    else //Got sequence wrong, load game over screen.
                     {
                         Log.i("HELLO","Got it wrong - load game over");
-                        PlayerGotSequenceWrong();
+                        currentSequenceIndex = 0;
 
                         Intent gameOverIntent = new Intent( this,GameOverActivity.class);
                         startActivity(gameOverIntent);
                     }
-
-
-
-
-                    //CHECK IF INDEX OF SELECTED BUTTON MATCHES SEQUENCE INDEX.
-                    //IF YES - INCREASE SEQUENCE COUNTER.
-                    // CHECK IF AT END OF SEQUENCE ARRAY.
-                    // IF YES - LOAD MAIN ACTIVITY, GO TO NEXT ROUND.
-
-                    //IF NO - RESET ROUND TO 1. RESET SEQUENCE ARRAY. GO BACK TO MAIN ACTIVITY.
-
                 }
             }
         }
@@ -229,20 +227,7 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         ViewCompat.setBackgroundTintList(selectedButton, ColorStateList.valueOf(getResources().getColor(R.color.White)));
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
     private int GetColourOfButton(Button button) { return button.getBackgroundTintList().getDefaultColor(); }
-
-
-    //private boolean PhoneTiltedNorth(float X, float Y,float Z){return X > 2.2f && Y > 0.07f && Z > 8f;}     //North - X greater than 3.5 AND Y less than 0.3     X > 4 && Y < 0.4
-    //private boolean PhoneTiltedSouth(float X,float Y, float Z){return X > 2.7f && Y < 0.07f && Z < 10;}     //South - X greater than 6 AND Z less than 7 Y < 0.3
-    //private boolean PhoneTiltedEast(float Y, float X){return Y > 3 && X < 1;}                             //East - Y greater than 3 AND X less than 1.
-    //private boolean PhoneTiltedWest(float X, float Y){return X > 1 && Y > 3;}                             //West - X greater than 1 AND Y greater than 3
-
-
 
     //MAG + ACCEL
     private boolean PhoneTiltedNorth(){return azimuth > 100 && pitch < 80f && pitch > 60f && roll < 100f;}
@@ -251,19 +236,8 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
     private boolean PhoneTiltedWest(){return azimuth < 110f && pitch < 85f && roll > 170f;}
     private boolean PhoneIsFlat(){return azimuth > 120 && pitch > 80;}
 
-    private void PlayerGotSequenceWrong()
-    {
-        currentSequenceIndex = 0;
-    }
 
     //X = AZIMUTH
     //Y = PITCH
     //Z = ROLL
-
-
-    //NORTH - pitch < 72 && Z > 85
-    //SOUTH - pitch < 70 && Z < -85
-    //EAST - AZIMUTH < -15
-    //WEST - AZIMUTH > 115
-
 }

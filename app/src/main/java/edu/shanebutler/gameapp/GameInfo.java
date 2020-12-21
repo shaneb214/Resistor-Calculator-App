@@ -41,4 +41,6 @@ public class GameInfo
         roundNumber = 1;
         playerScore = 0;
     }
+
+    public static boolean IsAtStartOfGame(){return sequence.size() == 0;}
 }
