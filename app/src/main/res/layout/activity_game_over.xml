@@ -76,6 +76,7 @@
         android:id="@+id/btnShowHighScores"
         android:layout_width="125dp"
         android:layout_height="61dp"
+        android:onClick="OnShowHighScoresClicked"
         android:text="High Scores"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

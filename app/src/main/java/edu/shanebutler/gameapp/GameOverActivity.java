@@ -58,8 +58,8 @@ public class GameOverActivity extends AppCompatActivity {
 
     public void OnShowHighScoresClicked(View view)
     {
-
-        //Open Activity to show top 5 leaderboard.
+        Intent highScoreIntent = new Intent(view.getContext(),HighScores.class);
+        startActivity(highScoreIntent);
     }
 
     public void OnSubmitScoreClicked(View view)
@@ -67,6 +67,7 @@ public class GameOverActivity extends AppCompatActivity {
         if(etEnterName.getText().toString() != "")
         {
             //Submit Score to database.
+            //Disable edittext and button.
         }
     }
 }
