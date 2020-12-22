@@ -1,8 +1,5 @@
 package edu.shanebutler.gameapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
-
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -11,6 +8,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Integer> colourList = new ArrayList<Integer>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -113,13 +114,11 @@ public class MainActivity extends AppCompatActivity {
             {
                 sequenceHandler.postDelayed(this,millisecondsBetweenButtonFlashing);
                 sequenceIndex++;
-                Log.i("INCREASE", String.valueOf(sequenceIndex));
             }
             else
             {
-                ShowingSequenceToUser = false; //Triggering too early.
+                ShowingSequenceToUser = false;
                 sequenceIndex = 0;
-                Log.i("RESET", String.valueOf(sequenceIndex));
             }
         }
     };

@@ -31,7 +31,8 @@ public class GameScore implements Comparable<GameScore>
 
 
     @Override
-    public int compareTo(GameScore other) {
+    public int compareTo(GameScore other)
+    {
 
         if(getScore() < other.getScore())
             return 1;

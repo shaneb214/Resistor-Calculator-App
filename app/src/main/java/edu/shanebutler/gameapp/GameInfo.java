@@ -7,13 +7,19 @@ public class GameInfo
 {
     public static ArrayList<Integer> sequence = new ArrayList<>();
 
-    public static boolean PlayerLost = true;
+    //Round.
     public static int roundNumber = 1;
+
+    //Sequence.
     public static int startingSequenceAmount;
     public static int currentSequenceAmount;
     private static int sequenceIncreaseAmount = 2;
+
+    //Score.
     public static int playerScore = 0;
-    private static int scoreIncreasePerRound = 2;
+    private static int startingScoreToGivePerRound = 4;
+    private static int currentScoreToGivePerRound = startingScoreToGivePerRound;
+
     public static int totalNumberOfButtons;
 
     public static void AddRandomNumbersToSequence(int amountToAdd)
@@ -29,7 +35,9 @@ public class GameInfo
     public static void GoToNextRound()
     {
         roundNumber++;
-        playerScore += scoreIncreasePerRound;
+        playerScore += currentScoreToGivePerRound;
+
+        currentScoreToGivePerRound += startingScoreToGivePerRound; //Score given to player will be 4, 8, 16, 32 etc.
 
         currentSequenceAmount += sequenceIncreaseAmount;
         AddRandomNumbersToSequence(sequenceIncreaseAmount);
@@ -40,6 +48,7 @@ public class GameInfo
         sequence.clear();
         roundNumber = 1;
         playerScore = 0;
+        currentScoreToGivePerRound = startingScoreToGivePerRound;
     }
 
     public static boolean IsAtStartOfGame(){return sequence.size() == 0;}

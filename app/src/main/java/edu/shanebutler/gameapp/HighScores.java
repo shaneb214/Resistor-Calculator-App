@@ -2,7 +2,6 @@ package edu.shanebutler.gameapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -48,7 +47,6 @@ public class HighScores extends AppCompatActivity
         {
             GameScore score = top5Scores.get(i);
             String startingText = (i + 1) + ". " + score.getName();
-            Log.i("TEST",startingText + GenerateWhiteSpace(padLeftTotalAmount - startingText.length()) + score.getScore());
             tvHighScoreTable[i].setText(startingText + GenerateWhiteSpace(padLeftTotalAmount - startingText.length()) + score.getScore());
         }
     }

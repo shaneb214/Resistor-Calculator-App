@@ -2,7 +2,6 @@ package edu.shanebutler.gameapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -71,7 +70,6 @@ public class GameOverActivity extends AppCompatActivity {
         {
             //Add score to database.
             db.addGamescore(new GameScore(etEnterName.getText().toString().trim(),GameInfo.playerScore));
-            Log.i("ADDED TO DATABASE","Database score count is " + db.getGamescoresCount());
 
             //Disable edittext and button.
             DisableScoreEntryUI();

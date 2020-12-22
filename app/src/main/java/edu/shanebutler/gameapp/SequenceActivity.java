@@ -1,27 +1,21 @@
 package edu.shanebutler.gameapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayDeque;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class SequenceActivity extends AppCompatActivity implements SensorEventListener
 {
@@ -97,19 +91,22 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
 
     }
 
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
 
         sensorManager.registerListener(this, aSensor,SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
         sensorManager.unregisterListener(this);
     }
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    public void onAccuracyChanged(Sensor sensor, int accuracy)
+    {
 
     }
 
@@ -186,7 +183,6 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
                     //If button selected was correct in the sequence.
                     if(indexOfSelectedButton == GameInfo.sequence.get(currentSequenceIndex))
                     {
-                        Log.i("HELLO","Got it right.");
                         currentSequenceIndex++;
 
 
@@ -194,7 +190,6 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
                         if(currentSequenceIndex == GameInfo.sequence.size())
                         {
                             GameInfo.GoToNextRound();
-                            Log.i("HELLO","Reached end of sequence.");
                             Intent mainIntent = new Intent( this,MainActivity.class);
                             mainIntent.putExtra("ButtonColours",buttonColours);
                             startActivity(mainIntent);
@@ -202,7 +197,6 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
                     }
                     else //Got sequence wrong, load game over screen.
                     {
-                        Log.i("HELLO","Got it wrong - load game over");
                         currentSequenceIndex = 0;
 
                         Intent gameOverIntent = new Intent( this,GameOverActivity.class);

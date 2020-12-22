@@ -136,17 +136,19 @@ public class DatabaseHandler extends SQLiteOpenHelper
         return count;
     }
 
-    //Lets say if if top 5 scores are all scores of 2.
-    //If user gets 2 and this method is called, it will return true as 2 >= 2.
-    //However when calling getTopScores - not sure if this score will be in that top 5.
     public boolean isScoreInTop5(int score)
     {
         List<GameScore> top5List = getTop5Scores();
 
+        if(top5List.size() < 5)
+            return true;
+        
         for(int i = 0; i < top5List.size(); i++)
         {
             if(score >= top5List.get(i).getScore())
+            {
                 return true;
+            }
         }
 
         return false;
