@@ -8,9 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -20,7 +18,6 @@ import java.util.ArrayList;
 public class SequenceActivity extends AppCompatActivity implements SensorEventListener
 {
     //UI Elements.
-    private TextView tvX, tvY, tvZ, tvOrientation;
     private Button btnNorth, btnSouth,btnEast,btnWest;
     private ArrayList<Button> buttons;
 
@@ -60,14 +57,6 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
         mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         sensorManager.registerListener(this, aSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-
-
-        //UI for debugging tilting values.
-        tvX = findViewById(R.id.tvX);
-        tvY = findViewById(R.id.tvY);
-        tvZ = findViewById(R.id.tvZ);
-        tvOrientation = findViewById(R.id.tvOrientation);
-
 
         //Finding UI Elements.
         btnNorth = findViewById(R.id.btnNorth);
@@ -139,40 +128,25 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
             accels = null;
 
 
-            tvX.setText(String.valueOf((int) azimuth));
-            tvY.setText(String.valueOf((int) pitch));
-            tvZ.setText(String.valueOf((int)roll));
-
-
             //Check if phone is tilted a certain way - if it is, select button.
             if(PhoneTiltedNorth() && !buttonIsSelected)
             {
                 OnButtonSelected(btnNorth);
-
-                tvOrientation.setText("North");
             }
             else if(PhoneTiltedSouth() && !buttonIsSelected)
             {
                 OnButtonSelected(btnSouth);
-
-                tvOrientation.setText("South");
             }
             else if(PhoneTiltedEast() && !buttonIsSelected)
             {
                 OnButtonSelected(btnEast);
-
-                tvOrientation.setText("East");
             }
             else if(PhoneTiltedWest() && !buttonIsSelected)
             {
                 OnButtonSelected(btnWest);
-
-                tvOrientation.setText("West");
             }
             else if(PhoneIsFlat())
             {
-                tvOrientation.setText("NONE");
-
                 //If phone goes back to being flat after a button was selected.
                 if(buttonIsSelected)
                 {
@@ -224,9 +198,9 @@ public class SequenceActivity extends AppCompatActivity implements SensorEventLi
     private int GetColourOfButton(Button button) { return button.getBackgroundTintList().getDefaultColor(); }
 
     //MAG + ACCEL
-    private boolean PhoneTiltedNorth(){return azimuth > 100 && pitch < 80f && pitch > 60f && roll < 100f;}
+    private boolean PhoneTiltedNorth(){return azimuth > 90 && pitch < 80f && pitch > 60f && roll < 100f;}
     private boolean PhoneTiltedSouth(){return azimuth < 70f && pitch < 70f;}
-    private boolean PhoneTiltedEast(){return azimuth < 70f && pitch < 82f && roll < 35f ;}
+    private boolean PhoneTiltedEast(){return azimuth > 120f && azimuth < 180f && pitch < 82f && roll < 35f ;}
     private boolean PhoneTiltedWest(){return azimuth < 110f && pitch < 85f && roll > 170f;}
     private boolean PhoneIsFlat(){return azimuth > 120 && pitch > 80;}
 
