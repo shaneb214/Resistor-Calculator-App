@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //Showing Sequence To User.
-    private boolean ShowingSequenceToUser;
+    private boolean sequenceShownToUser;
     private int sequenceIndex = 0;
     private Handler sequenceHandler = new Handler();
     private Button buttonInSequence;
@@ -117,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
-                ShowingSequenceToUser = false;
                 sequenceIndex = 0;
             }
         }
@@ -140,27 +139,24 @@ public class MainActivity extends AppCompatActivity {
     public void OnTrySequenceClicked(View view)
     {
         //Load activity to attempt sequence - pass over colours of buttons.
-        if(!ShowingSequenceToUser)
-        {
-            Intent sequenceIntent = new Intent(view.getContext(),SequenceActivity.class);
-            sequenceIntent.putExtra("ButtonColours",buttonColours);
-            startActivity(sequenceIntent);
-        }
+
+        Intent sequenceIntent = new Intent(view.getContext(),SequenceActivity.class);
+        sequenceIntent.putExtra("ButtonColours",buttonColours);
+        startActivity(sequenceIntent);
+
     }
 
     public void OnShowSequenceClicked(View view)
     {
-        //Show sequence to user.
-        if(!ShowingSequenceToUser)
+        if(!sequenceShownToUser)
         {
-            ShowingSequenceToUser = true;
+            sequenceShownToUser = true;
             for(int i =0;i < GameInfo.sequence.size(); i++)
             {
                 Log.i("HELLO",String.valueOf(GameInfo.sequence.get(i)));
             }
 
             sequenceRunnable.run();
-
         }
     }
 
